@@ -6,6 +6,13 @@ using UnityEngine.SceneManagement;
 public class PlayerHealth : MonoBehaviour
 {
     [SerializeField] float playerHealth = 160;
+    
+    DeathHandler deathHandler;
+
+    private void Start()
+    {
+        deathHandler = GetComponent<DeathHandler>();
+    }
 
     public void PlayerHit(float damage)
     {
@@ -20,6 +27,6 @@ public class PlayerHealth : MonoBehaviour
 
     private void PlayerDied()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        deathHandler.HandleDeath();
     }
 }

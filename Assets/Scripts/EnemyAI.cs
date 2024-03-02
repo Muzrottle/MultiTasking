@@ -23,6 +23,7 @@ public class EnemyAI : MonoBehaviour
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        GetComponent<EnemyHealth>().OnDamageTaken += EnemyAI_OnDamageTaken;
     }
 
     void Update()
@@ -37,6 +38,11 @@ public class EnemyAI : MonoBehaviour
         {
             isProvoked = true;
         }
+    }
+
+    private void EnemyAI_OnDamageTaken(object sender, System.EventArgs e)
+    {
+        isProvoked = true;
     }
 
     private void EngageTarget()
@@ -73,21 +79,21 @@ public class EnemyAI : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * turnSpeed);
     }
 
-    [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
-    static void DrawEnemyRangeGizmo(EnemyAI enemy, GizmoType gizmoType)
-    {
-        Vector3 enemyPosition = enemy.transform.position;
-        float gizmosRange = enemy.ChaseRange;
+    //[DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
+    //static void DrawEnemyRangeGizmo(EnemyAI enemy, GizmoType gizmoType)
+    //{
+    //    Vector3 enemyPosition = enemy.transform.position;
+    //    float gizmosRange = enemy.ChaseRange;
 
-        if ((gizmoType & GizmoType.Selected) != 0)
-        {
-            Gizmos.color = Color.red;
-        }
-        else
-        {
-            Gizmos.color = Color.red * 0.5f;
-        }
+    //    if ((gizmoType & GizmoType.Selected) != 0)
+    //    {
+    //        Gizmos.color = Color.red;
+    //    }
+    //    else
+    //    {
+    //        Gizmos.color = Color.red * 0.5f;
+    //    }
 
-        Gizmos.DrawWireSphere(enemyPosition, gizmosRange);
-    }
+    //    Gizmos.DrawWireSphere(enemyPosition, gizmosRange);
+    //}
 }

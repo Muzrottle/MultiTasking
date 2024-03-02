@@ -7,23 +7,31 @@ using UnityEngine.InputSystem;
 public class Weapon : MonoBehaviour
 {
     [SerializeField] Camera FPCamera;
-    [SerializeField] float range = 100f;
+    [SerializeField] float range = 40f;
     [SerializeField] float weaponDamage = 5;
+    [SerializeField] float fullMag = 30;
+    [SerializeField] float currentAmmo = 90;
+    public float CurrentAmmo { get { return currentAmmo; } }
+    public float rpm = 360;
     [SerializeField] ParticleSystem muzzleFlashVFX;
     [SerializeField] GameObject hitEffect;
+    [SerializeField] AudioSource gunShot;
 
-    void Update()
+    float magAmmo;
+    public float MagAmmo { get { return magAmmo; } }
+
+    private void Start()
     {
-        if (Input.GetButtonDown("Fire1"))
-        {
-            Shoot();
-        }
+        magAmmo = fullMag;
     }
 
-    private void Shoot()
+    public void Shoot()
     {
-        PlayMuzzleFlash();
+        magAmmo--;
+
         ProcessRaycast();
+        PlayMuzzleFlash();
+        PlayAudio();
     }
 
     private void PlayMuzzleFlash()
@@ -52,9 +60,29 @@ public class Weapon : MonoBehaviour
         }
     }
 
+    private void PlayAudio()
+    {
+        gunShot.Play();
+    }
+
     private void CreateHitImpact(RaycastHit hit)
     {
         GameObject impact = Instantiate(hitEffect, hit.point, Quaternion.LookRotation(hit.normal));
         Destroy(impact, 1f);
+    }
+
+    public void RefillAmmo()
+    {
+        if (currentAmmo + magAmmo - 30 > 0)
+        {
+            currentAmmo += magAmmo;
+            currentAmmo -= fullMag;
+            magAmmo = fullMag;
+        }
+        else
+        {
+            magAmmo = magAmmo + currentAmmo;
+            currentAmmo = 0;
+        }
     }
 }
