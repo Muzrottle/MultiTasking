@@ -15,6 +15,8 @@ public class WeaponAnimationHandler : MonoBehaviour
 
     bool isWalking = false;
     bool isReloading = false;
+    
+    int reloadLayerIndex = 3;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +33,21 @@ public class WeaponAnimationHandler : MonoBehaviour
 
         if (playerAnimator == null)
             return;
+        
+        PlayerInput();
 
+        if (isReloading)
+        {
+            if (IsSprinting())
+            {
+                playerAnimator.Play("Reloading.Idle", reloadLayerIndex, 0f);
+                isReloading = false;
+            }
+        }
+    }
+
+    private void PlayerInput()
+    {
         if (Input.GetButton("Fire1") && CanShoot())
         {
             Debug.Log("Is shooting.");
@@ -51,10 +67,12 @@ public class WeaponAnimationHandler : MonoBehaviour
         if (Input.GetButtonDown("Fire2"))
         {
             Aim(true);
+            weapon.AimZoom(true);
         }
         else if (Input.GetButtonUp("Fire2"))
         {
             Aim(false);
+            weapon.AimZoom(false);
         }
 
         if (input.move != Vector2.zero)
@@ -72,7 +90,9 @@ public class WeaponAnimationHandler : MonoBehaviour
 
     private bool CanShoot() => !isReloading && timeSinceLastShot > 1f / (weapon.rpm / 60f);
     
-    private bool CanReload() => weapon.CurrentAmmo != 0;
+    private bool CanReload() => weapon.CurrentAmmo != 0 && weapon.MagAmmo != weapon.FullMag;
+
+    private bool IsSprinting() => input.sprint;
 
     private void Fire(bool isShooting)
     {
@@ -144,7 +164,7 @@ public class WeaponAnimationHandler : MonoBehaviour
 
         playerAnimator.SetBool("isWalking", isWalking);
 
-        if (input.sprint)
+        if (IsSprinting())
         {
             playerAnimator.SetBool("isSprinting", true);
         }
